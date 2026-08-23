@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#25206b">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<title>Periodic Table Game Guide</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0; min-height:100vh; font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(135deg,#10152f,#25206b,#6b245f); color:#fff;
+}
+.container{width:min(1100px,92%);margin:auto;padding:48px 0 65px}
+.hero{text-align:center;margin-bottom:36px}
+.badge{display:inline-block;padding:8px 16px;border-radius:30px;background:#ffffff14;border:1px solid #ffffff30;font-size:12px;letter-spacing:1.5px}
+h1{font-size:clamp(38px,7vw,68px);margin:17px 0 10px;line-height:1}
+.hero p{max-width:700px;margin:auto;color:#d9d6e9;font-size:17px;line-height:1.6}
+.games{display:grid;grid-template-columns:repeat(5,1fr);gap:15px}
+.game-card{
+  min-height:185px;padding:20px;border-radius:22px;text-align:left;color:#fff;
+  background:#ffffff12;border:1px solid #ffffff25;cursor:pointer;
+  box-shadow:0 14px 35px #0003;transition:.25s ease;
+}
+.game-card:hover{transform:translateY(-7px);background:#ffffff20}
+.number{font-size:12px;opacity:.65;letter-spacing:1px}
+.icon{font-size:39px;margin:18px 0 12px}
+.game-card h2{font-size:18px;margin:0}
+.panel{
+  display:none;margin-top:28px;padding:30px;border-radius:26px;
+  background:#0d1026dd;border:1px solid #ffffff22;box-shadow:0 20px 50px #0005;
+  animation:up .3s ease;
+}
+.panel.active{display:block}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.head{display:flex;justify-content:space-between;gap:20px}
+.head h2{font-size:34px;margin:5px 0 8px}
+.objective{color:#cfcbe0;line-height:1.55;margin:0}
+.close{border:0;width:40px;height:40px;border-radius:50%;background:#ffffff12;color:#fff;font-size:22px;cursor:pointer}
+.steps{display:grid;gap:12px;margin-top:25px}
+.step{display:flex;gap:14px;padding:16px;border-radius:15px;background:#ffffff09}
+.stepnum{width:33px;height:33px;flex:0 0 33px;border-radius:50%;display:grid;place-items:center;background:#a657ff;font-weight:bold}
+.step strong{display:block;margin-bottom:4px}
+.step span{color:#d4d0df;line-height:1.5}
+.tip{margin-top:22px;padding:17px 19px;border-left:4px solid #c85cff;background:#c85cff0e;border-radius:9px}
+.tip p{margin:6px 0 0;color:#d6d1df;line-height:1.5}
+.secondary{
+  margin-top:22px;padding:13px 18px;border:0;border-radius:12px;
+  background:#a657ff;color:#fff;font-weight:bold;cursor:pointer;font-size:14px;
+}
+.secondary:hover{filter:brightness(1.1)}
+.questions{
+  display:none;margin-top:18px;padding:20px;border-radius:17px;background:#ffffff08;
+  border:1px solid #ffffff16;max-height:430px;overflow:auto;
+}
+.questions.active{display:block}
+.questions h3{margin-top:0}
+.questions ol{margin:0;padding-left:24px}
+.questions li{padding:5px 0;color:#ded9e8;line-height:1.35}
+footer{text-align:center;margin-top:32px;color:#aaa6bd;font-size:12px}
+@media(max-width:900px){.games{grid-template-columns:repeat(2,1fr)}.game-card:last-child{grid-column:1/-1}}
+@media(max-width:520px){.games{grid-template-columns:1fr}.game-card:last-child{grid-column:auto}.panel{padding:22px}.head h2{font-size:28px}}
+
+.dice-section{margin-top:24px;padding:22px;border-radius:18px;background:#ffffff0f;border:1px solid #ffffff25}
+.dice-section h3{margin:0 0 8px;font-size:23px}
+.dice-section p{margin:0;color:#cfcbe0;line-height:1.5}
+.dice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:20px}
+.die-box{text-align:center;padding:16px 10px;border-radius:18px;background:#ffffff0f}
+.die-label{font-size:13px;letter-spacing:1px;color:#cfc5e2;margin-bottom:10px}
+.die{width:92px;height:92px;margin:auto;display:grid;place-items:center;border-radius:20px;background:#fff;color:#25206b;font-size:42px;font-weight:800;box-shadow:0 10px 24px #0004}
+.die.group-type{font-size:30px}
+.roll-btn{margin-top:20px;width:100%;padding:15px;border:0;border-radius:14px;background:#a657ff;color:#fff;font-size:17px;font-weight:700;cursor:pointer}
+.dice-result{display:none;margin-top:18px;padding:16px;border-radius:13px;background:#c85cff1f;border:1px solid #c85cff77;text-align:center;line-height:1.5}
+.dice-result.active{display:block}
+.dice-help{margin-top:14px;font-size:13px;color:#bcb5ca;text-align:center}
+@media(max-width:520px){.dice-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="container">
+<header class="hero">
+  <span class="badge">PERIODIC TABLE GAME GUIDE</span>
+  <h1>Choose Your Game</h1>
+  <p>Click a game to see how to play. Element Detective also includes a complete list of example yes/no questions.</p>
+</header>
+
+<section class="games">
+  <button class="game-card" onclick="showGame(0)">
+    <div class="number">GAME 01</div><div class="icon">🕵️</div><h2>Element Detective</h2>
+  </button>
+  <button class="game-card" onclick="showGame(1)">
+    <div class="number">GAME 02</div><div class="icon">🔄</div><h2>Element Flip</h2>
+  </button>
+  <button class="game-card" onclick="showGame(2)">
+    <div class="number">GAME 03</div><div class="icon">🎲</div><h2>Dice of Doom</h2>
+  </button>
+  <button class="game-card" onclick="showGame(3)">
+    <div class="number">GAME 04</div><div class="icon">⚔️</div><h2>Element War</h2>
+  </button>
+  <button class="game-card" onclick="showGame(4)">
+    <div class="number">GAME 05</div><div class="icon">🌪️</div><h2>Chaos Mode</h2>
+  </button>
+</section>
+
+<section id="panel" class="panel">
+  <div class="head">
+    <div>
+      <div id="num" class="number"></div>
+      <h2 id="title"></h2>
+      <p id="objective" class="objective"></p>
+    </div>
+    <button class="close" onclick="closePanel()">×</button>
+  </div>
+
+  <div id="steps" class="steps"></div>
+
+  <div id="tip" class="tip"></div>
+
+  <button id="questionButton" class="secondary" onclick="toggleQuestions()" style="display:none">
+    📋 View Example Questions
+  </button>
+
+  
+<div id="diceSection" class="dice-section" style="display:none">
+<h3>🎲 Roll the Dice</h3>
+<p>Roll all three dice to get your Period, Group, and Group Type.</p>
+<div class="dice-grid">
+<div class="die-box"><div class="die-label">DIE 1 — PERIOD</div><div id="periodDie" class="die">?</div></div>
+<div class="die-box"><div class="die-label">DIE 2 — GROUP</div><div id="groupDie" class="die">?</div></div>
+<div class="die-box"><div class="die-label">DIE 3 — TYPE</div><div id="typeDie" class="die group-type">?</div></div>
+</div>
+<button class="roll-btn" onclick="rollDice()">🎲 Roll All 3 Dice</button>
+<div id="diceResult" class="dice-result"></div>
+<div class="dice-help">Die 1: Period 1–10 • Die 2: Group 1–10 • Die 3: Group A or Group B</div>
+</div>
+
+<div id="questions" class="questions">
+    <h3>Example Yes/No Questions</h3>
+    <p style="color:#bbb5ca">Player B may choose from questions like these, but can ask a maximum of <strong>5 questions</strong>.</p>
+    <ol id="questionList"></ol>
+  </div>
+</section>
+
+<footer>Click another game to view its rules and instructions.</footer>
+</div>
+
+<script>
+const games=[
+{
+ title:"Element Detective",
+ objective:"Player A secretly chooses an element. Player B must identify it using only yes/no questions.",
+ steps:[
+  ["Choose an element","Player A secretly chooses one element from the periodic table."],
+  ["Ask questions","Player B asks questions that can only be answered with “yes” or “no.”"],
+  ["Maximum of 5","Player B can ask a maximum of 5 questions."],
+  ["Eliminate possibilities","Use each answer to eliminate elements that do not fit the clues."],
+  ["Identify the element","Player B must identify the correct element within the 5-question limit."]
+ ],
+ tip:"Choose questions that eliminate many possibilities at once. Think about the element’s group, period, type, atomic number, and symbol."
+},
+{
+ title:"Element Flip",
+ objective:"Flip element tiles and collect as many face-up tiles as possible.",
+ steps:[
+  ["Prepare the tiles","Scatter several removed element tiles face down."],
+  ["Take turns","Players take turns flipping one tile."],
+  ["Face up","If the tile lands face up, the player keeps it."],
+  ["Face down","If the tile remains face down, it stays in place."],
+  ["Count the tiles","The player with the most collected tiles wins."]
+ ],
+ tip:"Pay attention to which tiles have already been flipped and keep track of your collected tiles."
+},
+{
+ title:"Dice of Doom",
+ objective:"Roll three dice to determine the Period, Group number, and whether the group is A or B. Then find the element at that location.",
+ steps:[
+  ["Roll three dice","Roll all three dice at the same time."],
+  ["Read the dice","The first die gives the Period (1–10), the second gives the Group (1–10), and the third determines Group A or Group B."],
+  ["Find the location","Use the Period, Group, and Group Type shown by the dice to find the correct location on the periodic table."],
+  ["Attach the element","Find and attach the corresponding element tile."],
+  ["No element","If no element exists at that intersection, the player loses their turn."]
+ ],
+ tip:"Check the Group and Period carefully before choosing an element."
+},
+{
+ title:"Element War",
+ objective:"Compete for element tiles by comparing atomic numbers.",
+ steps:[
+  ["Shuffle the tiles","Shuffle all removed element tiles."],
+  ["Draw one tile","Each player draws one element tile."],
+  ["Compare atomic numbers","Compare the atomic numbers on the two tiles."],
+  ["Higher number wins","The player with the higher atomic number wins both tiles."],
+  ["Continue","Keep playing until all tiles have been used."]
+ ],
+ tip:"Remember: the player with the higher atomic number wins the round."
+},
+{
+ title:"Chaos Mode",
+ objective:"Place as many element cards as possible in the correct positions before the one-minute timer ends.",
+ steps:[
+  ["Shuffle the cards","Take all the element cards off the table and shuffle them."],
+  ["Start the timer","Each team gets exactly one minute to place as many cards as possible."],
+  ["Place the cards","Teams work quickly to put the cards in their correct positions."],
+  ["Score the cards","Correct placement = +2 points. Wrong placement = −1 point."],
+  ["Determine the winner","The team with the highest score wins."]
+ ],
+ tip:"Work quickly, but check your placements. A wrong card costs one point."
+}
+];
+
+const questions=[
+"Is it a metal?",
+"Is it a nonmetal?",
+"Is it a metalloid?",
+"Is it in Period 1?",
+"Is it in Period 2?",
+"Is it in Period 3?",
+"Is it in Period 4?",
+"Is it in Period 5?",
+"Is it in Period 6?",
+"Is it in Period 7?",
+"Is it in Group 1?",
+"Is it in Group 2?",
+"Is it in Group 13?",
+"Is it in Group 14?",
+"Is it in Group 15?",
+"Is it in Group 16?",
+"Is it in Group 17?",
+"Is it in Group 18?",
+"Is it a transition metal?",
+"Is it an alkali metal?",
+"Is it an alkaline earth metal?",
+"Is it a halogen?",
+"Is it a noble gas?",
+"Is it a lanthanide?",
+"Is it an actinide?",
+"Is its atomic number greater than 10?",
+"Is its atomic number greater than 20?",
+"Is its atomic number greater than 30?",
+"Is its atomic number greater than 50?",
+"Is its atomic number greater than 80?",
+"Is its atomic number less than 20?",
+"Is its atomic number less than 50?",
+"Is its atomic number an even number?",
+"Is its atomic number an odd number?",
+"Is its atomic number between 20 and 40?",
+"Does its symbol have one letter?",
+"Does its symbol have two letters?",
+"Does its symbol start with the same letter as its name?",
+"Does its symbol contain the letter A?",
+"Does its symbol contain the letter C?",
+"Does its symbol contain the letter S?",
+"Does its symbol contain the letter P?",
+"Is it radioactive?",
+"Is it located on the left side of the periodic table?",
+"Is it located on the right side?",
+"Is it located near the staircase line?"
+];
+
+const list=document.getElementById("questionList");
+questions.forEach(q=>{const li=document.createElement("li");li.textContent=q;list.appendChild(li)});
+
+function showGame(i){
+ const g=games[i];
+ document.getElementById("num").textContent="GAME "+String(i+1).padStart(2,"0");
+ document.getElementById("title").textContent=g.title;
+ document.getElementById("objective").textContent=g.objective;
+ const steps=document.getElementById("steps");steps.innerHTML="";
+ g.steps.forEach((s,i)=>{
+  const d=document.createElement("div");d.className="step";
+  d.innerHTML=`<div class="stepnum">${i+1}</div><div><strong>${s[0]}</strong><span>${s[1]}</span></div>`;
+  steps.appendChild(d);
+ });
+ document.getElementById("tip").innerHTML=`<strong>💡 Helpful Tip</strong><p>${g.tip}</p>`;
+ document.getElementById("questionButton").style.display=i===0?"inline-block":"none";
+ document.getElementById("questions").classList.remove("active");
+ const diceSection=document.getElementById("diceSection");
+ diceSection.style.display=i===2?"block":"none";
+ if(i===2){
+   document.getElementById("periodDie").textContent="?";
+   document.getElementById("groupDie").textContent="?";
+   document.getElementById("typeDie").textContent="?";
+   const result=document.getElementById("diceResult");
+   result.classList.remove("active");
+   result.textContent="";
+ }
+ const p=document.getElementById("panel");p.classList.add("active");
+ p.scrollIntoView({behavior:"smooth",block:"start"});
+}
+function toggleQuestions(){document.getElementById("questions").classList.toggle("active")}
+function rollDice(){
+ const period=Math.floor(Math.random()*10)+1;
+ const group=Math.floor(Math.random()*10)+1;
+ const type=Math.random()<0.5?"A":"B";
+ const dice=[document.getElementById("periodDie"),document.getElementById("groupDie"),document.getElementById("typeDie")];
+ dice.forEach(d=>{d.style.transform="rotate(360deg) scale(.9)";d.style.transition="transform .18s ease"});
+ setTimeout(()=>{
+   dice[0].textContent=period; dice[1].textContent=group; dice[2].textContent=type;
+   dice.forEach(d=>d.style.transform="rotate(0deg) scale(1)");
+   const result=document.getElementById("diceResult");
+   result.innerHTML=`<strong>Your Result:</strong><br>Period <strong>${period}</strong> • Group <strong>${group}${type}</strong><br><span>Find the element at this location!</span>`;
+   result.classList.add("active");
+ },180);
+}
+function closePanel(){document.getElementById("panel").classList.remove("active")}
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js"));
+}
+</script>
+</body>
+</html>
